@@ -14,6 +14,8 @@ public class AnimationGame extends ApplicationAdapter {
 	private static final int FRAME_COLS = 8, FRAME_ROWS = 2;
 	private float spriteWidth = 2f;
 	private float spriteHeight = 2f;
+	private int posX = 50;
+	private int posY = 50;
 	// Objects used
 	Animation<TextureRegion> walkAnimation; // Must declare frame type (TextureRegion)
 	Texture walkSheet;
@@ -61,7 +63,7 @@ public class AnimationGame extends ApplicationAdapter {
 		// Get current frame of animation for the current stateTime
 		TextureRegion currentFrame = walkAnimation.getKeyFrame(stateTime, true);
 		spriteBatch.begin();
-		spriteBatch.draw(currentFrame, 50, 50, currentFrame.getRegionWidth() * spriteWidth, currentFrame.getRegionHeight() * spriteHeight);
+		spriteBatch.draw(currentFrame, posX, posY, currentFrame.getRegionWidth() * spriteWidth, currentFrame.getRegionHeight() * spriteHeight);
 		spriteBatch.end();
 	}
 
