@@ -11,7 +11,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class Animator implements ApplicationListener {
 
     // Constant rows and columns of the sprite sheet
-    private static final int FRAME_COLS = 6, FRAME_ROWS = 5;
+    private static final int FRAME_COLS = 8, FRAME_ROWS = 2;
 
     // Objects used
     Animation<TextureRegion> walkAnimation; // Must declare frame type (TextureRegion)
@@ -25,7 +25,7 @@ public class Animator implements ApplicationListener {
     public void create() {
 
         // Load the sprite sheet as a Texture
-        walkSheet = new Texture(Gdx.files.internal("animation_sheet.png"));
+        walkSheet = new Texture(Gdx.files.internal("scottpilgrim_multiple.png"));
 
         // Use the split utility method to create a 2D array of TextureRegions. This is
         // possible because this sprite sheet contains frames of equal size and they are
@@ -36,26 +36,20 @@ public class Animator implements ApplicationListener {
 
         // Place the regions into a 1D array in the correct order, starting from the top
         // left, going across first. The Animation constructor requires a 1D array.
-        TextureRegion[] walkFrames = new TextureRegion[FRAME_COLS * FRAME_ROWS];
+        TextureRegion[] walkFrames = new TextureRegion[FRAME_COLS]; // Only need frames from one row
         int index = 0;
-        for (int i = 0; i < FRAME_ROWS; i++) {
-            for (int j = 0; j < FRAME_COLS; j++) {
-                walkFrames[index++] = tmp[i][j];
-            }
+        int firstRow = FRAME_ROWS - 2; // Index of the first row
+        for (int i = 0; i < FRAME_COLS; i++) {
+            walkFrames[index++] = tmp[firstRow][i];
         }
 
         // Initialize the Animation with the frame interval and array of frames
-        walkAnimation = new Animation<TextureRegion>(0.025f, walkFrames);
+        walkAnimation = new Animation<TextureRegion>(0.08f, walkFrames);
 
         // Instantiate a SpriteBatch for drawing and reset the elapsed animation
         // time to 0
         spriteBatch = new SpriteBatch();
         stateTime = 0f;
-    }
-
-    @Override
-    public void resize(int width, int height) {
-
     }
 
     @Override
@@ -74,12 +68,14 @@ public class Animator implements ApplicationListener {
     public void pause() {
 
     }
-
     @Override
     public void resume() {
 
     }
+    @Override
+    public void resize(int width, int height) {
 
+    }
     @Override
     public void dispose() { // SpriteBatches and Textures must always be disposed
         spriteBatch.dispose();
