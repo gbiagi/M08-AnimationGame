@@ -23,7 +23,7 @@ public class AnimationGame extends Game {
 		font = new BitmapFont();
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 800, 480);
-		this.setScreen(new Animator());
+		this.setScreen(new Animator(this));
 	}
 	public void render() {
 		super.render(); // important!

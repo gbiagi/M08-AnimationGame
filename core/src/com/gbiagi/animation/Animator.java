@@ -7,6 +7,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 
 public class Animator implements Screen {
 
@@ -16,11 +18,25 @@ public class Animator implements Screen {
     Texture walkSheet;
     SpriteBatch spriteBatch;
 
+    float screenWidth = Gdx.graphics.getWidth();
+    float screenHeight = Gdx.graphics.getHeight();
+
+    AnimationGame game;
     float stateTime;
 
-    @Override
-    public void show() {
+    boolean moveLeft = true;
+    Rectangle goLeft, goRight;
+
+    Texture background;
+
+    int movX = 0;
+    int movY = 0;
+
+    public Animator(final AnimationGame game) {
+        this.game = game;
         walkSheet = new Texture(Gdx.files.internal("scottpilgrim_multiple.png"));
+
+        background = new Texture(Gdx.files.internal("background_lib.jpg"));
 
         TextureRegion[][] tmp = TextureRegion.split(walkSheet,
                 walkSheet.getWidth() / FRAME_COLS,
@@ -37,6 +53,15 @@ public class Animator implements Screen {
 
         spriteBatch = new SpriteBatch();
         stateTime = 0f;
+
+        goLeft = new Rectangle(0, 0, 800/2, 480);
+        goRight = new Rectangle(800/2, 0, 800/2, 480);
+
+    }
+
+
+    @Override
+    public void show() {
     }
 
     @Override
@@ -44,9 +69,30 @@ public class Animator implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stateTime += Gdx.graphics.getDeltaTime();
 
+
+        int control = movementJoystick();
+        if (control == 1) {
+            moveLeft = true;
+        } else if (control == 2) {
+            moveLeft = false;
+        }
+
         TextureRegion currentFrame = walkAnimation.getKeyFrame(stateTime, true);
+
+        float spriteWidth = currentFrame.getRegionWidth() * 2.5f;
+        float spriteHeight = currentFrame.getRegionHeight() * 2.5f;
+
+        float x = (screenWidth - spriteWidth) / 2;
+        float y = (screenHeight - spriteHeight) / 2 - 100;
+
+
         spriteBatch.begin();
-        spriteBatch.draw(currentFrame, 50, 50);
+        spriteBatch.draw(background, 0, 0, screenWidth, screenHeight);
+        if (moveLeft) {
+            spriteBatch.draw(currentFrame, x + movX, y + movY, -spriteWidth, spriteHeight);
+        } else {
+            spriteBatch.draw(currentFrame, x + movX, y + movY, spriteWidth, spriteHeight);
+        }
         spriteBatch.end();
     }
 
@@ -64,6 +110,26 @@ public class Animator implements Screen {
 
     @Override
     public void hide() {
+    }
+
+    public int movementJoystick() {
+        // Cada iteracion es un toque a la patanlla
+        for(int i = 0; i < 10; i++)
+            if (Gdx.input.isTouched(i)) {
+                Vector3 touchPos = new Vector3();
+                touchPos.set(Gdx.input.getX(i), Gdx.input.getY(i), 0);
+                game.camera.unproject(touchPos);
+                if (goLeft.contains(touchPos.x, touchPos.y)) {
+                    movX -= 10;
+                    //movY = 0;
+                    return 1;
+                } else if (goRight.contains(touchPos.x, touchPos.y)) {
+                    //movY += 1;
+                    movX += 10;
+                    return 2;
+                }
+            }
+        return 0;
     }
 
     @Override
